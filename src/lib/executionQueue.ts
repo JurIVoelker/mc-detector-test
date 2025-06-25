@@ -44,6 +44,10 @@ async function processQueue() {
           (box) => `${box[0]} ${box[1]} ${box[2]}`
         );
 
+        await prisma.foundEntities.deleteMany({
+          where: { regionId: nextItem.id },
+        });
+
         await prisma.foundEntities.createMany({
           data: foundChests.map((chest) => ({
             regionId: nextItem.id,
