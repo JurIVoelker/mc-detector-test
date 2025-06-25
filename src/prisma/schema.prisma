@@ -1,0 +1,28 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./db/database.db"
+}
+
+model McRegion {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  status    String          @default("unprocessed")
+  entities  FoundEntities[]
+}
+
+model FoundEntities {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      String
+  data      String
+  regionId  Int
+  region    McRegion @relation(fields: [regionId], references: [id])
+}

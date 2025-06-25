@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "FoundEntities" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "type" TEXT NOT NULL,
+    "data" TEXT NOT NULL,
+    "regionId" INTEGER NOT NULL,
+    CONSTRAINT "FoundEntities_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "McRegion" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
