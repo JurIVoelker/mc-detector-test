@@ -1,5 +1,6 @@
 import ContentLayout from "@/components/content-layout";
 import CopyText from "@/components/copy-text";
+import Entity3DPreview from "@/components/detail/entity-3d-preview";
 import Navigator from "@/components/detail/navigator";
 import Sidebar from "@/components/sidebar/sidebar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -68,6 +69,7 @@ const DetailsPage = async ({
             />
           </CardContent>
         </Card>
+        <Entity3DPreview />
         <Navigator
           prevId={allEntities[prevIndex].id}
           nextId={allEntities[nextIndex].id}
