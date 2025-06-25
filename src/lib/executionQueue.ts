@@ -1,6 +1,9 @@
 import { execFile } from "child_process";
 import { prisma } from "./prisma";
 
+type Vec3 = [number, number, number];
+export type FoundBlockSphere = { local: Vec3; world: Vec3; item_id: number };
+
 export const queuedMcRegions: {
   id: number;
   state: "queued" | "processing" | "processed";
@@ -35,6 +38,8 @@ async function processQueue() {
         const data = (await executeScript(nextItem.id)) as {
           found_chests: number[][];
           found_shulker_boxes: number[][];
+          found_chests_sphere: FoundBlockSphere[];
+          found_shulker_boxes_sphere: FoundBlockSphere[];
         };
 
         const foundChests = data.found_chests.map(
@@ -49,17 +54,19 @@ async function processQueue() {
         });
 
         await prisma.foundEntities.createMany({
-          data: foundChests.map((chest) => ({
+          data: foundChests.map((chest, index) => ({
             regionId: nextItem.id,
+            data3d: JSON.stringify(data.found_chests_sphere[index]),
             type: "chest",
             data: chest,
           })),
         });
 
         await prisma.foundEntities.createMany({
-          data: foundShulkerBoxes.map((box) => ({
+          data: foundShulkerBoxes.map((box, index) => ({
             regionId: nextItem.id,
             type: "shulker_box",
+            data3d: JSON.stringify(data.found_shulker_boxes_sphere[index]),
             data: box,
           })),
         });

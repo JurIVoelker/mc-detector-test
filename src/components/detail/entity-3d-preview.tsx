@@ -5,18 +5,17 @@ import { TextureLoader } from "three";
 import * as THREE from "three/webgpu";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { FoundBlockSphere } from "@/lib/executionQueue";
+import {
+  HIDDEN_TEXTURES,
+  RENDER_ITEM_PROPERTIES,
+} from "@/lib/renderItemProperties";
 
-const Entity3DPreview = () => {
-  const blockData: { position: [number, number, number]; itemId: number }[] = [
-    { position: [0, 0, 0], itemId: 0 },
-    { position: [1, 0, 0], itemId: 54 },
-    { position: [0, 0, 0], itemId: 54 },
-    { position: [0, -1, 0], itemId: 3 },
-    { position: [1, -1, 0], itemId: 3 },
-    { position: [-1, -1, 0], itemId: 3 },
-    { position: [2, -1, 0], itemId: 3 },
-    { position: [0, 1, 0], itemId: 44 },
-  ];
+const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
+  const blockData = data3d.map((block) => ({
+    position: block.local,
+    itemId: block.item_id || 0, // Default to 0 if item_id is not present
+  }));
 
   const [enableOpacity, setEnableOpacity] = useState(false);
 
@@ -24,7 +23,6 @@ const Entity3DPreview = () => {
     <>
       <Canvas style={{ height: "400px", width: "100%" }}>
         <ambientLight />
-        <pointLight position={[10, 10, 10]} />
         <OrbitControls />
         {blockData.map((block, index) => (
           <Block
@@ -53,38 +51,21 @@ function Block({
   itemId: number;
   enableOpacity?: boolean;
 }) {
-  const propertiesMap: Record<
-    number,
-    {
-      texture: string | number;
-      geometry?: [number, number, number];
-      positionOffset?: [number, number, number];
-      opacity?: number;
-    }
-  > = {
-    54: {
-      geometry: [0.9, 0.9, 0.9],
-      texture: 54,
-      positionOffset: [0, -0.05, 0],
-    },
-    44: {
-      geometry: [1, 0.5, 1],
-      texture: 1,
-      positionOffset: [0, -0.25, 0],
-      opacity: 0.5,
-    },
-    3: {
-      texture: 3,
-      opacity: 0.5,
-    },
-  };
-
-  const geometry = propertiesMap[itemId]?.geometry || [1, 1, 1];
-  const positionOffset = propertiesMap[itemId]?.positionOffset || [0, 0, 0];
-  const texture = propertiesMap[itemId]?.texture
-    ? "/textures/" + propertiesMap[itemId]?.texture + ".png"
+  const geometry = RENDER_ITEM_PROPERTIES[itemId]?.geometry || [1, 1, 1];
+  const positionOffset = RENDER_ITEM_PROPERTIES[itemId]?.positionOffset || [
+    0, 0, 0,
+  ];
+  if (
+    !RENDER_ITEM_PROPERTIES[itemId]?.texture &&
+    !HIDDEN_TEXTURES.includes(itemId)
+  ) {
+    console.warn(`No texture defined for itemId ${itemId}`);
+  }
+  const texture = RENDER_ITEM_PROPERTIES[itemId]?.texture
+    ? "/textures/" + RENDER_ITEM_PROPERTIES[itemId]?.texture + ".png"
     : "/textures/default.png";
-  const opacity = enableOpacity ? propertiesMap[itemId]?.opacity ?? 1 : 1;
+  const opacity =
+    enableOpacity && !RENDER_ITEM_PROPERTIES[itemId]?.noOpacity ? 0.3 : 1;
 
   const colorMap = useLoader(TextureLoader, texture);
 
@@ -93,7 +74,7 @@ function Block({
     colorMap.minFilter = THREE.NearestFilter;
   }
 
-  if (itemId === 0) {
+  if (HIDDEN_TEXTURES.includes(itemId)) {
     return null;
   }
 

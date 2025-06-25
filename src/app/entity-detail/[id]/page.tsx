@@ -4,6 +4,7 @@ import Entity3DPreview from "@/components/detail/entity-3d-preview";
 import Navigator from "@/components/detail/navigator";
 import Sidebar from "@/components/sidebar/sidebar";
 import { Card, CardContent } from "@/components/ui/card";
+import { FoundBlockSphere } from "@/lib/executionQueue";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -69,7 +70,11 @@ const DetailsPage = async ({
             />
           </CardContent>
         </Card>
-        <Entity3DPreview />
+        {entity.data3d && (
+          <Entity3DPreview
+            data3d={JSON.parse(entity.data3d) as FoundBlockSphere[]}
+          />
+        )}
         <Navigator
           prevId={allEntities[prevIndex].id}
           nextId={allEntities[nextIndex].id}

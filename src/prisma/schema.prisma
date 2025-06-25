@@ -23,6 +23,7 @@ model FoundEntities {
   updatedAt DateTime @updatedAt
   type      String
   data      String
+  data3d    String?
   regionId  Int
   region    McRegion @relation(fields: [regionId], references: [id])
 }
