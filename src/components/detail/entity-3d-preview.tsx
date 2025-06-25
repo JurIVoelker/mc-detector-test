@@ -21,9 +21,13 @@ const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
 
   return (
     <>
-      <Canvas style={{ height: "400px", width: "100%" }}>
-        <ambientLight />
+      <Canvas
+        style={{ height: "400px", width: "100%" }}
+        camera={{ position: [0, 0, 8] }}
+      >
+        <ambientLight intensity={0.75} />
         <OrbitControls />
+        <directionalLight position={[10, 10, 10]} castShadow intensity={4} />
         {blockData.map((block, index) => (
           <Block
             key={index}

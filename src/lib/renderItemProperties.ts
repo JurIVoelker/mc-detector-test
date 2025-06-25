@@ -1,6 +1,8 @@
-export const HIDDEN_TEXTURES = [0, 50, 63, 55, 65, 68];
+export const HIDDEN_TEXTURES = [0, 37, 38, 39, 40, 50, 55, 63, 65, 68, 69, 175];
 
-const unmodifiedTextures = [1, 2, 3, 4, 61, 154, 152];
+const unmodifiedTextures = [
+  1, 2, 3, 4, 13, 15, 16, 20, 25, 48, 52, 58, 61, 154, 152,
+];
 const shulkerRange = [219, 234];
 
 export const RENDER_ITEM_PROPERTIES: Record<
@@ -29,6 +31,9 @@ export const RENDER_ITEM_PROPERTIES: Record<
     texture: 54,
     positionOffset: [0, -0.05, 0],
     noOpacity: true,
+  },
+  208: {
+    texture: 2,
   },
   149: {
     geometry: [1, 0.2, 1],
