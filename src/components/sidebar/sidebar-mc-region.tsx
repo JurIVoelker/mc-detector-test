@@ -61,7 +61,7 @@ const SidebarMcRegion = ({
 
       {!isProcessed && (
         <Button
-          variant={isActive ? "secondary" : "ghost"}
+          variant="ghost"
           className={cn("opacity-0", isProcessing && "opacity-100")}
           size="icon"
           disabled={isProcessing || isQueued}
@@ -77,9 +77,7 @@ const SidebarMcRegion = ({
           {isFailed && <X className="text-red-600" />}
         </Button>
       )}
-      {isProcessed && (
-        <ConfirmRescanDialog onConfirm={handleProcess} isActive={isActive} />
-      )}
+      {isProcessed && <ConfirmRescanDialog onConfirm={handleProcess} />}
     </div>
   );
 };
