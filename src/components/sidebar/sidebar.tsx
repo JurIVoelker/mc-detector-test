@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import SidebarMcRegion from "./sidebar-mc-region";
 import { Bookmark, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
+import { ConfirmScannAllDialog } from "./confirm-scan-all-dialog";
+import SidebarMcRegionsList from "./sidebar-mc-regions-list";
 
 const Sidebar = async () => {
   const mcRegions = await prisma.mcRegion.findMany();
@@ -33,10 +34,10 @@ const Sidebar = async () => {
         <Plus className="text-muted-foreground" fill="currentColor" />
         Region hinzufügen
       </Link>
+      <ConfirmScannAllDialog />
       <Separator />
-      {mcRegions.map((region) => (
-        <SidebarMcRegion mcRegion={region} key={region.id} />
-      ))}
+      <SidebarMcRegionsList mcRegions={mcRegions} />
+
       {mcRegions.length === 0 && (
         <div className="text-muted-foreground text-sm">
           No regions found. Please add a region to get started.

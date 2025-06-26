@@ -3,43 +3,38 @@ import { McRegion } from "@prisma/client";
 import { Button, buttonVariants } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { Check, Globe, Loader2, Minus, Play } from "lucide-react";
-import { useState } from "react";
 import Link from "next/link";
 import { ConfirmRescanDialog } from "./confirm-rescan-dialog";
+import { Status } from "@/types/types";
 
 const SidebarMcRegion = ({
   mcRegion,
   className,
+  queueItem,
+  status = "unprocessed",
   ...props
 }: {
   mcRegion: McRegion;
   className?: string;
+  status?: Status;
+  queueItem: (regionId: number) => void;
 }) => {
-  const [state, setState] = useState(mcRegion.status || "unprocessed");
   const handleProcess = async () => {
-    setState("queued");
-    const evtSource = new EventSource(
-      "/api/process-mc-region?regionId=" + mcRegion.id
-    );
-    evtSource.addEventListener("message", (event) => {
-      const data = event.data;
-      if (data === "processing") {
-        setState("processing");
-      } else if (data === "processed") {
-        setState("processed");
-        evtSource.close();
-      }
-      console.log("Event received:", data);
+    queueItem(mcRegion.id);
+    const res = await fetch(`/api/process-mc-region?regionId=${mcRegion.id}`, {
+      method: "GET",
     });
-    evtSource.onerror = (err) => {
-      console.error("EventSource failed:", err);
-    };
+
+    if (!res.ok) {
+      console.error("Failed to process region:", mcRegion.id);
+      return;
+    }
   };
 
-  const isUnprocessed = state === "unprocessed";
-  const isProcessing = state === "processing";
-  const isProcessed = state === "processed";
-  const isQueued = state === "queued";
+  const isUnprocessed = status === "unprocessed";
+  const isProcessing = status === "processing";
+  const isProcessed = status === "processed";
+  const isQueued = status === "queued";
   return (
     <div
       className={cn(

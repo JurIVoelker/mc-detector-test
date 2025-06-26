@@ -60,6 +60,7 @@ const Navigator = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prevId, nextId, currentId, isSaved]);
 
   return (

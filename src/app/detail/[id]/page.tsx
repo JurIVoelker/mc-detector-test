@@ -3,6 +3,8 @@ import EntityCard from "@/components/detail/entity-card";
 import Sidebar from "@/components/sidebar/sidebar";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const DetailsPage = async ({
   params,
 }: {

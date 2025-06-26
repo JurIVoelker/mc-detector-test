@@ -199,6 +199,7 @@ export function McaDropzone({
     } finally {
       setIsUploading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files, onFilesChange]);
 
   // Upload-Funktion über Ref verfügbar machen oder zurückgeben

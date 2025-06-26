@@ -28,3 +28,11 @@ model FoundEntities {
   region    McRegion @relation(fields: [regionId], references: [id])
   isSaved   Boolean  @default(false)
 }
+
+model ExecutionQueue {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  state     String   @default("queued")
+  regionId  Int
+}
