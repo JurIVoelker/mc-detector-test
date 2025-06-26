@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "prisma migrate dev --name init --schema src/prisma/schema.prisma",
-    "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts"
+    "migrate-deploy": "prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma generate --schema src/prisma/schema.prisma",
+    "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts",
+    "db:create": "npx tsx src/scripts/add-database.ts",
+    "setup": "npm run db:create && npm run migrate-deploy && npm run add-existing-mc-regions"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
