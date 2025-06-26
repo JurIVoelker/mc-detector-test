@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { ArrowLeft, ArrowRight, Bookmark } from "lucide-react";
 import { useState } from "react";
+import { useEffect } from "react";
 
 const Navigator = ({
   prevId,
@@ -34,6 +35,32 @@ const Navigator = ({
 
     setIsSaved(data.isSaved);
   };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+      push(`/entity-detail/${prevId}`);
+    } else if (
+      event.key === "ArrowRight" ||
+      event.key === "d" ||
+      event.key === "D"
+    ) {
+      push(`/entity-detail/${nextId}`);
+    } else if (
+      event.key === "s" ||
+      event.key === "S" ||
+      event.key === " " ||
+      event.key === "Enter"
+    ) {
+      handleSave();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [prevId, nextId, currentId, isSaved]);
 
   return (
     <div className="relative flex justify-center flex-1 w-auto">

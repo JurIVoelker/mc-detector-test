@@ -59,8 +59,8 @@ const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
           className="absolute top-4 right-0"
           variant="outline"
         >
-          {!enableOpacity && <Eye />}
-          {enableOpacity && <EyeOff />}
+          {enableOpacity && <Eye />}
+          {!enableOpacity && <EyeOff />}
           Durchsichtige Blöcke
         </Button>
       </div>
