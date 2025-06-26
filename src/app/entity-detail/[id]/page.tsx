@@ -47,7 +47,7 @@ const DetailsPage = async ({
   };
 
   return (
-    <div className="flex h-full w-full gap-4">
+    <div className="flex h-full w-full">
       <Sidebar />
       <ContentLayout className="relative">
         <h1 className="text-3xl font-semibold mb-6 flex items-center gap-2 justify-between">

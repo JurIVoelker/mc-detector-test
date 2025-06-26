@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import SidebarMcRegion from "./sidebar-mc-region";
-import { Bookmark, Home } from "lucide-react";
+import { Bookmark, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -14,16 +14,6 @@ const Sidebar = async () => {
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <Link
-        href={`/`}
-        className={cn(
-          buttonVariants({ variant: "ghost" }),
-          "w-full flex items-center justify-start space-x-2"
-        )}
-      >
-        <Home className="text-muted-foreground" />
-        Home
-      </Link>
-      <Link
         href={`/saved`}
         className={cn(
           buttonVariants({ variant: "ghost" }),
@@ -32,6 +22,16 @@ const Sidebar = async () => {
       >
         <Bookmark className="text-muted-foreground" fill="currentColor" />
         Gespeichert
+      </Link>
+      <Link
+        href={`/add-region`}
+        className={cn(
+          buttonVariants({ variant: "ghost" }),
+          "w-full flex items-center justify-start space-x-2"
+        )}
+      >
+        <Plus className="text-muted-foreground" fill="currentColor" />
+        Region hinzufügen
       </Link>
       <Separator />
       {mcRegions.map((region) => (

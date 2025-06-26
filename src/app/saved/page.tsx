@@ -12,7 +12,7 @@ const SavedPage = async () => {
   });
 
   return (
-    <div className="flex h-full w-full gap-4">
+    <div className="flex h-full w-full">
       <Sidebar />
       <ContentLayout>
         <h1 className="text-3xl font-semibold mb-6">Gespeicherte Orte</h1>

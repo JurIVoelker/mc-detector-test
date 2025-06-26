@@ -9,7 +9,7 @@ const ContentLayout = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("w-full h-full min-h-screen p-4 pt-8", className)}>
+    <div className={cn("w-full h-full min-h-screen p-8 pt-8", className)}>
       {children}
     </div>
   );
