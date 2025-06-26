@@ -46,6 +46,7 @@ export const RENDER_ITEM_PROPERTIES: Record<
       {
         geometry: [1, 1, 1],
         texture: "219-234",
+        noOpacity: true,
       },
     ])
   ),
