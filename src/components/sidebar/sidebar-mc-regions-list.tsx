@@ -3,6 +3,8 @@ import { McRegion } from "@prisma/client";
 import SidebarMcRegion from "./sidebar-mc-region";
 import { useEffect, useState } from "react";
 import { Status } from "@/types/types";
+import { Button } from "../ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
   const [regionsStatus, setRegionsStatus] = useState(
@@ -11,6 +13,8 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
       status: region.status as Status,
     }))
   );
+
+  const [processedHidden, setFinishedHidden] = useState(false);
 
   const queueItem = (regionId: number) => {
     setRegionsStatus((prevRegionsStatus) => {
@@ -34,9 +38,36 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
     };
   }, []);
 
+  let filteredMcRegions = [];
+  if (processedHidden) {
+    filteredMcRegions = mcRegions.filter(
+      (region) => region.status !== "processed"
+    );
+  } else {
+    filteredMcRegions = mcRegions;
+  }
+
   return (
     <div>
-      {mcRegions.map((region) => (
+      <Button
+        variant="secondary"
+        className="flex justify-start w-full"
+        onClick={() => setFinishedHidden(!processedHidden)}
+      >
+        {!processedHidden && (
+          <>
+            <Eye className="text-muted-foreground" />
+            Fertige Sichtbar
+          </>
+        )}
+        {processedHidden && (
+          <>
+            <EyeOff className="text-muted-foreground" />
+            Fertige Versteckt
+          </>
+        )}
+      </Button>
+      {filteredMcRegions.map((region) => (
         <SidebarMcRegion
           mcRegion={region}
           key={region.id}
