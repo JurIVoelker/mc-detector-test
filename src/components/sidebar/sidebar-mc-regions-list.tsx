@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Status } from "@/types/types";
 import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
   const [regionsStatus, setRegionsStatus] = useState(
@@ -13,6 +14,11 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
       status: region.status as Status,
     }))
   );
+
+  const pathname = usePathname();
+  const currentId = pathname.startsWith("/detail/")
+    ? parseInt(pathname.split("/").pop() || "") || null
+    : null;
 
   const [processedHidden, setFinishedHidden] = useState(false);
 
@@ -48,7 +54,7 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
   }
 
   return (
-    <div>
+    <div className="space-y-1">
       <Button
         variant="secondary"
         className="flex justify-start w-full"
@@ -69,6 +75,7 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
       </Button>
       {filteredMcRegions.map((region) => (
         <SidebarMcRegion
+          isActive={currentId === region.id}
           mcRegion={region}
           key={region.id}
           queueItem={queueItem}

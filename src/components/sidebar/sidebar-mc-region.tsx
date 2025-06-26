@@ -8,12 +8,14 @@ import { ConfirmRescanDialog } from "./confirm-rescan-dialog";
 import { Status } from "@/types/types";
 
 const SidebarMcRegion = ({
+  isActive,
   mcRegion,
   className,
   queueItem,
   status = "unprocessed",
   ...props
 }: {
+  isActive?: boolean;
   mcRegion: McRegion;
   className?: string;
   status?: Status;
@@ -47,9 +49,10 @@ const SidebarMcRegion = ({
       <Link
         href={`/detail/${mcRegion.id}`}
         className={cn(
-          buttonVariants({ variant: "ghost" }),
+          buttonVariants({ variant: isActive ? "secondary" : "ghost" }),
           "flex justify-start cursor-pointer flex-1",
-          (isProcessing || isQueued) && "opacity-50"
+          (isProcessing || isQueued) && "opacity-50",
+          "mr-1"
         )}
       >
         <Globe className="text-muted-foreground " />
@@ -58,7 +61,7 @@ const SidebarMcRegion = ({
 
       {!isProcessed && (
         <Button
-          variant="ghost"
+          variant={isActive ? "secondary" : "ghost"}
           className={cn("opacity-0", isProcessing && "opacity-100")}
           size="icon"
           disabled={isProcessing || isQueued}
@@ -74,7 +77,9 @@ const SidebarMcRegion = ({
           {isFailed && <X className="text-red-600" />}
         </Button>
       )}
-      {isProcessed && <ConfirmRescanDialog onConfirm={handleProcess} />}
+      {isProcessed && (
+        <ConfirmRescanDialog onConfirm={handleProcess} isActive={isActive} />
+      )}
     </div>
   );
 };

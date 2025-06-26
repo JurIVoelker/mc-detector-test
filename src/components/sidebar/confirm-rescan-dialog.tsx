@@ -12,11 +12,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 
-export function ConfirmRescanDialog({ onConfirm }: { onConfirm?: () => void }) {
+export function ConfirmRescanDialog({
+  onConfirm,
+  isActive,
+}: {
+  onConfirm?: () => void;
+  isActive?: boolean;
+}) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant={isActive ? "secondary" : "ghost"} size="icon">
           <Check className="text-emerald-600" />
         </Button>
       </AlertDialogTrigger>
