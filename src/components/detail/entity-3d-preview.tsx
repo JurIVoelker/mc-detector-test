@@ -10,6 +10,8 @@ import {
   HIDDEN_TEXTURES,
   RENDER_ITEM_PROPERTIES,
 } from "@/lib/renderItemProperties";
+import { cn } from "@/lib/utils";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
   const blockData = data3d.map((block) => ({
@@ -18,26 +20,50 @@ const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
   }));
 
   const [enableOpacity, setEnableOpacity] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <>
-      <Canvas
-        style={{ height: "400px", width: "100%" }}
-        camera={{ position: [0, 0, 8] }}
-      >
-        <ambientLight intensity={0.75} />
-        <OrbitControls />
-        <directionalLight position={[10, 10, 10]} castShadow intensity={4} />
-        {blockData.map((block, index) => (
-          <Block
-            key={index}
-            position={block.position}
-            itemId={block.itemId}
-            enableOpacity={enableOpacity}
-          />
-        ))}
-      </Canvas>
-      <Button onClick={() => setEnableOpacity(!enableOpacity)}>Opacity</Button>
+      <div className="relative">
+        <Canvas
+          style={{ height: "400px", width: "100%" }}
+          camera={{ position: [0, 0, 8] }}
+          onCreated={() => {
+            setLoaded(true);
+          }}
+          className={cn(!loaded && "opacity-0")}
+        >
+          <ambientLight intensity={0.75} />
+          <OrbitControls />
+          <directionalLight position={[10, 10, 10]} castShadow intensity={4} />
+          {blockData.map((block, index) => (
+            <Block
+              key={index}
+              position={block.position}
+              itemId={block.itemId}
+              enableOpacity={enableOpacity}
+            />
+          ))}
+        </Canvas>
+        {!loaded && (
+          <div
+            className={cn(
+              "w-[100%] h-[32px] relative top-[-216px] flex items-center justify-center"
+            )}
+          >
+            <Loader2 className="animate-spin" />
+          </div>
+        )}
+        <Button
+          onClick={() => setEnableOpacity(!enableOpacity)}
+          className="absolute top-4 right-0"
+          variant="outline"
+        >
+          {!enableOpacity && <Eye />}
+          {enableOpacity && <EyeOff />}
+          Durchsichtige Blöcke
+        </Button>
+      </div>
     </>
   );
 };
