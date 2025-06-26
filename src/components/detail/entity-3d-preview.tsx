@@ -3,7 +3,7 @@ import { Canvas, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { TextureLoader } from "three";
 import * as THREE from "three/webgpu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { FoundBlockSphere } from "@/lib/executionQueue";
 import {
@@ -21,6 +21,19 @@ const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
 
   const [enableOpacity, setEnableOpacity] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (["h", "H", "o", "O"].includes(event.key)) {
+      setEnableOpacity((prev) => !prev);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <>
