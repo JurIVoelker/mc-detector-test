@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Check, Globe, Loader2, Minus, Play } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { ConfirmRescanDialog } from "./confirm-rescan-dialog";
 
 const SidebarMcRegion = ({
   mcRegion,
@@ -15,7 +16,6 @@ const SidebarMcRegion = ({
   className?: string;
 }) => {
   const [state, setState] = useState(mcRegion.status || "unprocessed");
-
   const handleProcess = async () => {
     setState("queued");
     const evtSource = new EventSource(
@@ -60,21 +60,24 @@ const SidebarMcRegion = ({
         {mcRegion.name}
       </Link>
 
-      <Button
-        variant="ghost"
-        className={cn("opacity-0", isProcessing && "opacity-100")}
-        size="icon"
-        disabled={isProcessing || isQueued}
-        onClick={handleProcess}
-        style={isProcessed || isQueued ? { opacity: 1 } : {}}
-      >
-        {isUnprocessed && <Play />}
-        {isQueued && <Minus className="text-muted-foreground" />}
-        {isProcessing && (
-          <Loader2 className="animate-spin text-muted-foreground" />
-        )}
-        {isProcessed && <Check className="text-emerald-600" />}
-      </Button>
+      {!isProcessed && (
+        <Button
+          variant="ghost"
+          className={cn("opacity-0", isProcessing && "opacity-100")}
+          size="icon"
+          disabled={isProcessing || isQueued}
+          onClick={handleProcess}
+          style={isProcessed || isQueued ? { opacity: 1 } : {}}
+        >
+          {isUnprocessed && <Play />}
+          {isQueued && <Minus className="text-muted-foreground" />}
+          {isProcessing && (
+            <Loader2 className="animate-spin text-muted-foreground" />
+          )}
+          {isProcessed && <Check className="text-emerald-600" />}
+        </Button>
+      )}
+      {isProcessed && <ConfirmRescanDialog onConfirm={handleProcess} />}
     </div>
   );
 };

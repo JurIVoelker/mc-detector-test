@@ -26,4 +26,5 @@ model FoundEntities {
   data3d    String?
   regionId  Int
   region    McRegion @relation(fields: [regionId], references: [id])
+  isSaved   Boolean  @default(false)
 }

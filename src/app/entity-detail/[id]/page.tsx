@@ -78,6 +78,8 @@ const DetailsPage = async ({
         <Navigator
           prevId={allEntities[prevIndex].id}
           nextId={allEntities[nextIndex].id}
+          currentId={entity.id}
+          defaultSaved={entity.isSaved}
         />
       </ContentLayout>
     </div>

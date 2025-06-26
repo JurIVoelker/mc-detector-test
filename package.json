@@ -11,11 +11,12 @@
     "migrate-deploy": "prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma generate --schema src/prisma/schema.prisma",
     "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts",
     "db:create": "npx tsx src/scripts/add-database.ts",
-    "setup": "npm run db:create && npm run migrate-deploy && npm run add-existing-mc-regions"
+    "setup": "bun i && bun db:create && bun migrate-deploy && bun add-existing-mc-regions"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
     "@prisma/extension-accelerate": "^2.0.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^10.3.0",

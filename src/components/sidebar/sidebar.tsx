@@ -10,7 +10,7 @@ const Sidebar = async () => {
   const mcRegions = await prisma.mcRegion.findMany();
   return (
     <div
-      className="h-full w-full max-w-3xs min-h-screen p-4 overflow-y-scroll border-r pt-8 flex flex-col gap-2"
+      className="h-full w-70 min-h-screen p-4 overflow-y-scroll border-r pt-8 flex flex-col gap-2 shrink-0"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <Link
@@ -24,7 +24,7 @@ const Sidebar = async () => {
         Home
       </Link>
       <Link
-        href={`/`}
+        href={`/saved`}
         className={cn(
           buttonVariants({ variant: "ghost" }),
           "w-full flex items-center justify-start space-x-2"
