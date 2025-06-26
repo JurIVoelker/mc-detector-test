@@ -1,3 +1,4 @@
+"use client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,11 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 
-export function ConfirmScannAllDialog({
-  onConfirm,
-}: {
-  onConfirm?: () => void;
-}) {
+export function ConfirmScannAllDialog() {
+  const handleClick = async () => {
+    await fetch("/api/process-all-mc-regions", {
+      method: "GET",
+    });
+  };
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -36,7 +38,9 @@ export function ConfirmScannAllDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Fortfahren</AlertDialogAction>
+          <AlertDialogAction onClick={handleClick}>
+            Fortfahren
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -34,7 +34,8 @@
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "three": "^0.177.0",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

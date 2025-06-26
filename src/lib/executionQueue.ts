@@ -12,6 +12,14 @@ export async function addToExecutionQueue(id: number) {
   processQueue();
 }
 
+export async function addAllToExecutionQueue() {
+  await prisma.mcRegion.updateMany({
+    where: { status: { in: ["error", "unprocessed"] } },
+    data: { status: "queued" },
+  });
+  processQueue();
+}
+
 async function processQueue() {
   const processingRegions = await prisma.mcRegion.findMany({
     where: {

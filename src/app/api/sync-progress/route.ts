@@ -5,17 +5,27 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function GET(request: NextRequest) {
   const encoder = new TextEncoder();
+  const processedIds = new Set<number>();
   const stream = new ReadableStream({
     async start(controller) {
       let isLooping = true;
       let prevString = "";
       try {
+        const cancel = () => {
+          isLooping = false;
+          controller.close();
+        };
+
+        request.signal.addEventListener("abort", cancel);
+
         while (isLooping) {
           const queuedMcRegions = await prisma.mcRegion.findMany({
             where: {
-              status: {
-                in: ["queued", "processing"],
-              },
+              OR: [
+                { status: "queued" },
+                { status: "processing" },
+                { id: { in: Array.from(processedIds) } },
+              ],
             },
             select: {
               id: true,
@@ -23,9 +33,12 @@ export async function GET(request: NextRequest) {
             },
           });
 
+          queuedMcRegions.forEach((region) => {
+            processedIds.add(region.id);
+          });
+
           const stringifiedRegions = JSON.stringify(queuedMcRegions);
           if (prevString !== stringifiedRegions) {
-            console.log({ stringifiedRegions });
             controller.enqueue(
               encoder.encode(`data: ${stringifiedRegions}\n\n`)
             );
@@ -39,13 +52,6 @@ export async function GET(request: NextRequest) {
             await sleep(8000);
           }
         }
-
-        const cancel = () => {
-          isLooping = false;
-          controller.close();
-        };
-
-        request.signal.addEventListener("abort", cancel);
       } catch (error) {
         isLooping = false;
         // @ts-expect-error error may not have a code property

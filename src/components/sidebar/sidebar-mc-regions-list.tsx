@@ -28,6 +28,10 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
       const parsedData = JSON.parse(data);
       setRegionsStatus(parsedData);
     });
+
+    return () => {
+      evtSource.close();
+    };
   }, []);
 
   return (

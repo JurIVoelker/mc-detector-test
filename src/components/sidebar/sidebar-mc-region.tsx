@@ -2,7 +2,7 @@
 import { McRegion } from "@prisma/client";
 import { Button, buttonVariants } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { Check, Globe, Loader2, Minus, Play } from "lucide-react";
+import { Check, Globe, Loader2, Minus, Play, X } from "lucide-react";
 import Link from "next/link";
 import { ConfirmRescanDialog } from "./confirm-rescan-dialog";
 import { Status } from "@/types/types";
@@ -35,6 +35,7 @@ const SidebarMcRegion = ({
   const isProcessing = status === "processing";
   const isProcessed = status === "processed";
   const isQueued = status === "queued";
+  const isFailed = status === "error";
   return (
     <div
       className={cn(
@@ -62,7 +63,7 @@ const SidebarMcRegion = ({
           size="icon"
           disabled={isProcessing || isQueued}
           onClick={handleProcess}
-          style={isProcessed || isQueued ? { opacity: 1 } : {}}
+          style={isProcessed || isQueued || isFailed ? { opacity: 1 } : {}}
         >
           {isUnprocessed && <Play />}
           {isQueued && <Minus className="text-muted-foreground" />}
@@ -70,6 +71,7 @@ const SidebarMcRegion = ({
             <Loader2 className="animate-spin text-muted-foreground" />
           )}
           {isProcessed && <Check className="text-emerald-600" />}
+          {isFailed && <X className="text-red-600" />}
         </Button>
       )}
       {isProcessed && <ConfirmRescanDialog onConfirm={handleProcess} />}
