@@ -34,8 +34,8 @@ const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
         <Plus className="text-muted-foreground" fill="currentColor" />
         Region hinzufügen
       </Link>
-      <ConfirmScannAllDialog />
       <Separator />
+      <ConfirmScannAllDialog />
       <SidebarMcRegionsList mcRegions={mcRegions} activeRegion={activeRegion} />
 
       {mcRegions.length === 0 && (

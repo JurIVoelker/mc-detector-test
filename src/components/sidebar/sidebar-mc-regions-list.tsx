@@ -6,6 +6,7 @@ import { Status } from "@/types/types";
 import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Separator } from "../ui/separator";
 
 const SidebarMcRegionsList = ({
   mcRegions,
@@ -62,7 +63,7 @@ const SidebarMcRegionsList = ({
   return (
     <div className="space-y-1">
       <Button
-        variant="secondary"
+        variant="ghost"
         className="flex justify-start w-full"
         onClick={() => setFinishedHidden(!processedHidden)}
       >
@@ -79,6 +80,7 @@ const SidebarMcRegionsList = ({
           </>
         )}
       </Button>
+      <Separator className="my-2" />
       {filteredMcRegions.map((region) => (
         <SidebarMcRegion
           isActive={currentId === region.id || activeRegion === region.id}
