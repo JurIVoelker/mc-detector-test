@@ -11,7 +11,7 @@
     "migrate-deploy": "prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma generate --schema src/prisma/schema.prisma",
     "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts",
     "db:create": "npx tsx src/scripts/add-database.ts",
-    "setup": "git pull && bun i && bun db:create && bun migrate-deploy && bun add-existing-mc-regions && bun db:reset-queue && bun run build && bun start",
+    "setup": "bun i && bun db:create && bun migrate-deploy && bun add-existing-mc-regions && bun db:reset-queue && bun run build && bun start",
     "db:reset-queue": "npx tsx src/scripts/reset-queue.ts"
   },
   "dependencies": {
