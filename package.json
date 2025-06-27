@@ -12,6 +12,7 @@
     "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts",
     "db:create": "npx tsx src/scripts/add-database.ts",
     "setup": "bun i && bun db:create && bun migrate-deploy && bun add-existing-mc-regions && bun db:reset-queue && bun run build && bun start",
+    "update": "git reset --hard && git pull && bun setup",
     "db:reset-queue": "npx tsx src/scripts/reset-queue.ts"
   },
   "dependencies": {

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ConfirmScannAllDialog } from "./confirm-scan-all-dialog";
 import SidebarMcRegionsList from "./sidebar-mc-regions-list";
 
-const Sidebar = async () => {
+const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
   const mcRegions = await prisma.mcRegion.findMany();
   return (
     <div
@@ -36,7 +36,7 @@ const Sidebar = async () => {
       </Link>
       <ConfirmScannAllDialog />
       <Separator />
-      <SidebarMcRegionsList mcRegions={mcRegions} />
+      <SidebarMcRegionsList mcRegions={mcRegions} activeRegion={activeRegion} />
 
       {mcRegions.length === 0 && (
         <div className="text-muted-foreground text-sm">

@@ -7,7 +7,13 @@ import { Button } from "../ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
+const SidebarMcRegionsList = ({
+  mcRegions,
+  activeRegion,
+}: {
+  mcRegions: McRegion[];
+  activeRegion?: number;
+}) => {
   const [regionsStatus, setRegionsStatus] = useState(
     mcRegions.map((region) => ({
       id: region.id,
@@ -75,7 +81,7 @@ const SidebarMcRegionsList = ({ mcRegions }: { mcRegions: McRegion[] }) => {
       </Button>
       {filteredMcRegions.map((region) => (
         <SidebarMcRegion
-          isActive={currentId === region.id}
+          isActive={currentId === region.id || activeRegion === region.id}
           mcRegion={region}
           key={region.id}
           queueItem={queueItem}

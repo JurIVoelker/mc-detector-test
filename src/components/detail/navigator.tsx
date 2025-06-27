@@ -9,12 +9,14 @@ const Navigator = ({
   prevId,
   currentId,
   defaultSaved,
+  regionId,
   nextId,
 }: {
   prevId: number;
   currentId: number;
   defaultSaved: boolean;
   nextId: number;
+  regionId: number;
 }) => {
   const { push } = useRouter();
 
@@ -52,6 +54,8 @@ const Navigator = ({
       event.key === "Enter"
     ) {
       handleSave();
+    } else if (event.key === "Escape") {
+      push(`/detail/${regionId}`);
     }
   };
 
@@ -69,6 +73,7 @@ const Navigator = ({
         <Button
           variant="outline"
           onClick={() => push(`/entity-detail/${prevId}`)}
+          disabled={prevId === currentId}
         >
           <ArrowLeft />
           Vorheriges
@@ -80,6 +85,7 @@ const Navigator = ({
         <Button
           variant="outline"
           onClick={() => push(`/entity-detail/${nextId}`)}
+          disabled={nextId === currentId}
         >
           Nächstes
           <ArrowRight />
