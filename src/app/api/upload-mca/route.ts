@@ -16,9 +16,14 @@ export async function POST(request: NextRequest) {
       const filePath = join(saveDirectory, name);
       const fileBuffer = Buffer.from(await file.arrayBuffer());
       await fs.writeFile(filePath, fileBuffer);
-      await prisma.mcRegion.create({
-        data: {
+      await prisma.mcRegion.upsert({
+        where: { name: name },
+        update: {
+          status: "unprocessed",
+        },
+        create: {
           name: name,
+          status: "unprocessed",
         },
       });
     }

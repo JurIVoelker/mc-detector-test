@@ -2,6 +2,8 @@ import ContentLayout from "@/components/content-layout";
 import { McaDropzone } from "@/components/mca-dropzone";
 import Sidebar from "@/components/sidebar/sidebar";
 
+export const dynamic = "force-dynamic";
+
 const AddRegionPage = () => {
   return (
     <div className="flex h-full w-full">
