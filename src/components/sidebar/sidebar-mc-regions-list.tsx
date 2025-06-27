@@ -69,9 +69,9 @@ const SidebarMcRegionsList = ({
     } else if (sortingType === "status") {
       return a.status.localeCompare(b.status);
     } else if (sortingType === "createdAt") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     } else if (sortingType === "updatedAt") {
-      return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     }
     return 0;
   });
