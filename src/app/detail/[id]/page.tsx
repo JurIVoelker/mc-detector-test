@@ -2,6 +2,7 @@ import ContentLayout from "@/components/content-layout";
 import EntityCard from "@/components/detail/entity-card";
 import Sidebar from "@/components/sidebar/sidebar";
 import { prisma } from "@/lib/prisma";
+import { Loader2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,30 @@ const DetailsPage = async ({
             <EntityCard key={entity.id} entity={entity} />
           ))}
         </div>
+        {mcRegion.entities.length === 0 && (
+          <div>
+            {mcRegion.status === "unprocessed" && (
+              <div className="text-muted-foreground">
+                Analyse noch nicht gestartet
+              </div>
+            )}
+            {mcRegion.status === "processing" && (
+              <div className="text-muted-foreground flex items-center gap-2">
+                Analyse läuft <Loader2 className="animate-spin size-4" />
+              </div>
+            )}
+            {mcRegion.status === "processed" && (
+              <div className="text-muted-foreground">
+                Keine Entities gefunden
+              </div>
+            )}
+            {mcRegion.status === "queued" && (
+              <div className="text-muted-foreground">
+                Analyse in der Warteschlange
+              </div>
+            )}
+          </div>
+        )}
       </ContentLayout>
     </div>
   );

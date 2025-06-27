@@ -4,7 +4,7 @@ import SidebarMcRegion from "./sidebar-mc-region";
 import { useEffect, useState } from "react";
 import { Status } from "@/types/types";
 import { Button } from "../ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, SortDesc } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Separator } from "../ui/separator";
 
@@ -28,6 +28,9 @@ const SidebarMcRegionsList = ({
     : null;
 
   const [processedHidden, setFinishedHidden] = useState(false);
+  const [sortingType, setSortingType] = useState<
+    "name" | "status" | "createdAt" | "updatedAt"
+  >("name");
 
   const queueItem = (regionId: number) => {
     setRegionsStatus((prevRegionsStatus) => {
@@ -60,6 +63,19 @@ const SidebarMcRegionsList = ({
     filteredMcRegions = mcRegions;
   }
 
+  filteredMcRegions.sort((a, b) => {
+    if (sortingType === "name") {
+      return a.name.localeCompare(b.name);
+    } else if (sortingType === "status") {
+      return a.status.localeCompare(b.status);
+    } else if (sortingType === "createdAt") {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else if (sortingType === "updatedAt") {
+      return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+    }
+    return 0;
+  });
+
   return (
     <div className="space-y-1">
       <Button
@@ -77,6 +93,43 @@ const SidebarMcRegionsList = ({
           <>
             <EyeOff className="text-muted-foreground" />
             Fertige Versteckt
+          </>
+        )}
+      </Button>
+      <Button
+        variant="ghost"
+        className="flex justify-start w-full"
+        onClick={() =>
+          setSortingType(
+            sortingType === "name"
+              ? "status"
+              : sortingType === "status"
+              ? "createdAt"
+              : sortingType === "createdAt"
+              ? "updatedAt"
+              : "name"
+          )
+        }
+      >
+        <SortDesc className="text-muted-foreground" />
+        {sortingType === "name" && (
+          <>
+            <span>Name</span>
+          </>
+        )}
+        {sortingType === "status" && (
+          <>
+            <span>Status</span>
+          </>
+        )}
+        {sortingType === "createdAt" && (
+          <>
+            <span>Erstellungsdatum</span>
+          </>
+        )}
+        {sortingType === "updatedAt" && (
+          <>
+            <span>Aktualisierungsdatum</span>
           </>
         )}
       </Button>
