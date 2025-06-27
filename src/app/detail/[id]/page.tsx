@@ -31,7 +31,7 @@ const DetailsPage = async ({
   }
 
   return (
-    <div className="flex h-full w-full">
+    <div className="flex h-full w-full relative">
       <Sidebar />
       <ContentLayout>
         <h1 className="text-3xl font-semibold mb-6">{mcRegion.name}</h1>

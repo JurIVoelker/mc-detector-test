@@ -15,7 +15,7 @@ const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
   });
   return (
     <div
-      className="h-full w-70 min-h-screen p-4 overflow-y-scroll border-r pt-8 flex flex-col gap-2 shrink-0 max-h-screen"
+      className="h-full w-70 min-h-screen p-4 overflow-y-scroll border-r pt-8 flex flex-col gap-2 shrink-0 max-h-screen fixed"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <Link
