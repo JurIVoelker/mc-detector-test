@@ -22,7 +22,7 @@ export function ConfirmScannAllDialog() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="flex justify-start">
+        <Button variant="ghost" className="flex justify-start mb-1">
           <Play className="text-muted-foreground" /> Alle Scannen
         </Button>
       </AlertDialogTrigger>

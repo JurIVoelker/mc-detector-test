@@ -15,14 +15,14 @@ const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
   });
   return (
     <div
-      className="h-full w-70 min-h-screen p-4 overflow-y-scroll border-r pt-8 flex flex-col gap-2 shrink-0 max-h-screen fixed z-10"
+      className="h-full w-70 min-h-screen p-4 overflow-y-scroll border-r pt-8 flex flex-col shrink-0 max-h-screen fixed z-10"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <Link
         href={`/add-region`}
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "w-full flex items-center justify-start space-x-2"
+          "w-full flex items-center justify-start space-x-2 mb-1"
         )}
       >
         <Plus className="text-muted-foreground" fill="currentColor" />
@@ -38,7 +38,7 @@ const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
         <Bookmark className="text-muted-foreground" fill="currentColor" />
         Gespeichert
       </Link>
-      <Separator />
+      <Separator className="my-2" />
       <ConfirmScannAllDialog />
       <SidebarMcRegionsList mcRegions={mcRegions} activeRegion={activeRegion} />
 
