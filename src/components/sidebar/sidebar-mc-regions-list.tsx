@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Eye, EyeOff, SortDesc } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Separator } from "../ui/separator";
+import { useMainStore } from "@/store/main-store";
 
 const SidebarMcRegionsList = ({
   mcRegions,
@@ -22,15 +23,13 @@ const SidebarMcRegionsList = ({
     }))
   );
 
+  const { finishedHidden, sortingType, toggleSortingType, setFinishedHidden } =
+    useMainStore();
+
   const pathname = usePathname();
   const currentId = pathname.startsWith("/detail/")
     ? parseInt(pathname.split("/").pop() || "") || null
     : null;
-
-  const [processedHidden, setFinishedHidden] = useState(false);
-  const [sortingType, setSortingType] = useState<
-    "name" | "status" | "createdAt" | "updatedAt"
-  >("name");
 
   const queueItem = (regionId: number) => {
     setRegionsStatus((prevRegionsStatus) => {
@@ -55,7 +54,7 @@ const SidebarMcRegionsList = ({
   }, []);
 
   let filteredMcRegions = [];
-  if (processedHidden) {
+  if (finishedHidden) {
     filteredMcRegions = mcRegions.filter(
       (region) => region.status !== "processed"
     );
@@ -81,15 +80,15 @@ const SidebarMcRegionsList = ({
       <Button
         variant="ghost"
         className="flex justify-start w-full"
-        onClick={() => setFinishedHidden(!processedHidden)}
+        onClick={() => setFinishedHidden(!finishedHidden)}
       >
-        {!processedHidden && (
+        {!finishedHidden && (
           <>
             <Eye className="text-muted-foreground" />
             Fertige Sichtbar
           </>
         )}
-        {processedHidden && (
+        {finishedHidden && (
           <>
             <EyeOff className="text-muted-foreground" />
             Fertige Versteckt
@@ -99,17 +98,7 @@ const SidebarMcRegionsList = ({
       <Button
         variant="ghost"
         className="flex justify-start w-full"
-        onClick={() =>
-          setSortingType(
-            sortingType === "name"
-              ? "status"
-              : sortingType === "status"
-              ? "createdAt"
-              : sortingType === "createdAt"
-              ? "updatedAt"
-              : "name"
-          )
-        }
+        onClick={toggleSortingType}
       >
         <SortDesc className="text-muted-foreground" />
         {sortingType === "name" && (
