@@ -6,6 +6,7 @@ import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { ConfirmScannAllDialog } from "./confirm-scan-all-dialog";
 import SidebarMcRegionsList from "./sidebar-mc-regions-list";
+import { ConfirmDeleteAllDialog } from "./confirm-delete-all";
 
 const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
   const mcRegions = await prisma.mcRegion.findMany({
@@ -40,6 +41,7 @@ const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
       </Link>
       <Separator className="my-2" />
       <ConfirmScannAllDialog />
+      <ConfirmDeleteAllDialog />
       <SidebarMcRegionsList mcRegions={mcRegions} activeRegion={activeRegion} />
 
       {mcRegions.length === 0 && (
