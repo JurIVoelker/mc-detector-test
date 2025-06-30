@@ -16,7 +16,7 @@ const Navigator = ({
   currentId: number;
   defaultSaved: boolean;
   nextId: number;
-  regionId: number;
+  regionId: number | null;
 }) => {
   const { push } = useRouter();
 

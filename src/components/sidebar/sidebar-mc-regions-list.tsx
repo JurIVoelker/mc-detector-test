@@ -14,7 +14,7 @@ const SidebarMcRegionsList = ({
   activeRegion,
 }: {
   mcRegions: McRegion[];
-  activeRegion?: number;
+  activeRegion?: number | null;
 }) => {
   const [regionsStatus, setRegionsStatus] = useState(
     mcRegions.map((region) => ({

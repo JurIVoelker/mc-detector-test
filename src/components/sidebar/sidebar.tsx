@@ -8,7 +8,7 @@ import { ConfirmScannAllDialog } from "./confirm-scan-all-dialog";
 import SidebarMcRegionsList from "./sidebar-mc-regions-list";
 import { ConfirmDeleteAllDialog } from "./confirm-delete-all";
 
-const Sidebar = async ({ activeRegion }: { activeRegion?: number }) => {
+const Sidebar = async ({ activeRegion }: { activeRegion?: number | null }) => {
   const mcRegions = await prisma.mcRegion.findMany({
     orderBy: {
       createdAt: "desc",
