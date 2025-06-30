@@ -55,47 +55,13 @@ async function processQueue() {
 
         console.log(`Processing region with ID ${nextItem.id}`);
         const timeBefore = Date.now();
-        const data = (await executeScript(nextItem.id)) as {
-          found_chests: number[][];
-          found_shulker_boxes: number[][];
-          found_chests_sphere: FoundBlockSphere[];
-          found_shulker_boxes_sphere: FoundBlockSphere[];
-        };
+        await executeScript(nextItem.id);
         const timeAfter = Date.now();
         console.log(
           `Processing region with ID ${nextItem.id} took ${
             (timeAfter - timeBefore) / 1000
           } seconds`
         );
-
-        const foundChests = data.found_chests.map(
-          (chest) => `${chest[0]} ${chest[1]} ${chest[2]}`
-        );
-        const foundShulkerBoxes = data.found_shulker_boxes.map(
-          (box) => `${box[0]} ${box[1]} ${box[2]}`
-        );
-
-        await prisma.foundEntities.deleteMany({
-          where: { regionId: nextItem.id },
-        });
-
-        await prisma.foundEntities.createMany({
-          data: foundChests.map((chest, index) => ({
-            regionId: nextItem.id,
-            data3d: JSON.stringify(data.found_chests_sphere[index]),
-            type: "chest",
-            data: chest,
-          })),
-        });
-
-        await prisma.foundEntities.createMany({
-          data: foundShulkerBoxes.map((box, index) => ({
-            regionId: nextItem.id,
-            type: "shulker_box",
-            data3d: JSON.stringify(data.found_shulker_boxes_sphere[index]),
-            data: box,
-          })),
-        });
 
         await prisma.mcRegion.update({
           where: { id: nextItem.id },
@@ -141,8 +107,7 @@ const executeScript = async (id: number) => {
         return;
       }
       try {
-        const parsedOutput = JSON.parse(stdout);
-        resolve(parsedOutput);
+        resolve(stdout);
       } catch (parseError) {
         console.error(`Error parsing script output: ${parseError}`);
         console.error(`Raw output: ${stdout}`);
