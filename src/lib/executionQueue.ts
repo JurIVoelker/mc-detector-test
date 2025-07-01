@@ -1,8 +1,8 @@
 import { execFile } from "child_process";
 import { prisma } from "./prisma";
+import puppeteer from "puppeteer";
 
-type Vec3 = [number, number, number];
-export type FoundBlockSphere = { local: Vec3; world: Vec3; item_id: number };
+export type FoundBlocks = number;
 
 export async function addToExecutionQueue(id: number) {
   await prisma.mcRegion.update({
@@ -67,6 +67,24 @@ async function processQueue() {
           where: { id: nextItem.id },
           data: { status: "processed" },
         });
+
+        const entities = await prisma.foundEntities.findMany({
+          where: { regionId: nextItem.id },
+        });
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setViewport({ width: 800, height: 800 }); // Set browser size to 800x800px
+        for (const entity of entities) {
+          await page.goto(
+            `http://localhost:3000/entity-preview/${entity.id}`,
+            { waitUntil: "networkidle0" } // Wait until the network is idle
+          );
+          await page.screenshot({
+            path: `public/region-screenshots/${nextItem.id}-${entity.id}.png`,
+          });
+        }
+        await browser.close();
       } catch (error) {
         console.error(`Error processing region with ID ${nextItem.id}:`, error);
 

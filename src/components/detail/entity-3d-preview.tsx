@@ -3,16 +3,29 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { FoundBlockSphere } from "@/lib/executionQueue";
+import { FoundBlocks } from "@/lib/executionQueue";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Block } from "./block";
 
-const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
-  const blockData = data3d.map((block) => ({
-    position: block.local,
-    itemId: block.item_id || 0, // Default to 0 if item_id is not present
-  }));
+const Entity3DPreview = ({
+  data3d,
+  rawPreview,
+}: {
+  data3d: FoundBlocks[];
+  rawPreview?: boolean;
+}) => {
+  const blockData = data3d.map((blockId, index) => ({
+    position: [
+      (index % 16) - 8,
+      Math.floor(index / 256) - 8, // Adjusted to fit a 16x16x16 cube
+      (Math.floor(index / 16) % 16) - 8,
+    ] as [number, number, number], // Explicitly type as [number, number, number]
+    itemId: Number(blockId) || 0, // Convert blockId to a number, default to 0 if not present
+  })) as {
+    position: [number, number, number];
+    itemId: number;
+  }[];
 
   const [enableOpacity, setEnableOpacity] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -34,8 +47,8 @@ const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
     <>
       <div className="relative">
         <Canvas
-          style={{ height: "400px", width: "100%" }}
-          camera={{ position: [0, 0, 8] }}
+          style={{ height: "800px", width: rawPreview ? "800px" : "100%" }}
+          camera={{ position: rawPreview ? [0, 8, 16] : [16, 16, 16] }}
           onCreated={() => {
             setLoaded(true);
           }}
@@ -62,15 +75,17 @@ const Entity3DPreview = ({ data3d }: { data3d: FoundBlockSphere[] }) => {
             <Loader2 className="animate-spin" />
           </div>
         )}
-        <Button
-          onClick={() => setEnableOpacity(!enableOpacity)}
-          className="absolute top-4 right-0"
-          variant="outline"
-        >
-          {enableOpacity && <Eye />}
-          {!enableOpacity && <EyeOff />}
-          Durchsichtige Blöcke
-        </Button>
+        {!rawPreview && (
+          <Button
+            onClick={() => setEnableOpacity(!enableOpacity)}
+            className="absolute top-4 right-0"
+            variant="outline"
+          >
+            {enableOpacity && <Eye />}
+            {!enableOpacity && <EyeOff />}
+            Durchsichtige Blöcke
+          </Button>
+        )}
       </div>
     </>
   );

@@ -5,7 +5,7 @@ import Navigator from "@/components/detail/navigator";
 import Sidebar from "@/components/sidebar/sidebar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FoundBlockSphere } from "@/lib/executionQueue";
+import { FoundBlocks } from "@/lib/executionQueue";
 import { prisma } from "@/lib/prisma";
 import { X } from "lucide-react";
 import Link from "next/link";
@@ -32,6 +32,32 @@ const DetailsPage = async ({
   if (!entity) {
     return <div>Region not found</div>;
   }
+
+  const data3d = JSON.parse(entity.data3d || "[]") as FoundBlocks[];
+
+  const filteredData3d = data3d.map((blockId, index, array) => {
+    const neighborIds = [
+      array[index - 1],
+      array[index + 1],
+      array[index - 16],
+      array[index + 16],
+      array[index - 256],
+      array[index + 256],
+    ];
+
+    const isEdgeBlock =
+      index % 16 === 0 ||
+      index % 16 === 15 ||
+      Math.floor(index / 16) % 16 === 0 ||
+      Math.floor(index / 16) % 16 === 15 ||
+      Math.floor(index / 256) % 16 === 0 ||
+      Math.floor(index / 256) % 16 === 15;
+
+    if (neighborIds.includes(0) || isEdgeBlock) {
+      return blockId;
+    }
+    return 0;
+  });
 
   const allEntities = await prisma.foundEntities.findMany({
     where: { regionId: entity.regionId },
@@ -81,9 +107,7 @@ const DetailsPage = async ({
           </CardContent>
         </Card>
         {entity.data3d && (
-          <Entity3DPreview
-            data3d={JSON.parse(entity.data3d) as FoundBlockSphere[]}
-          />
+          <Entity3DPreview data3d={filteredData3d as FoundBlocks[]} />
         )}
         <Navigator
           prevId={allEntities[prevIndex].id}
