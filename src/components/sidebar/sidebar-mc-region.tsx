@@ -2,44 +2,42 @@
 import { McRegion } from "@prisma/client";
 import { Button, buttonVariants } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { Check, Globe, Loader2, Minus, Play } from "lucide-react";
-import { useState } from "react";
+import { Check, Globe, Loader2, Minus, Play, X } from "lucide-react";
 import Link from "next/link";
+import { ConfirmRescanDialog } from "./confirm-rescan-dialog";
+import { Status } from "@/types/types";
 
 const SidebarMcRegion = ({
+  isActive,
   mcRegion,
   className,
+  queueItem,
+  status = "unprocessed",
   ...props
 }: {
+  isActive?: boolean;
   mcRegion: McRegion;
   className?: string;
+  status?: Status;
+  queueItem: (regionId: number) => void;
 }) => {
-  const [state, setState] = useState(mcRegion.status || "unprocessed");
-
   const handleProcess = async () => {
-    setState("queued");
-    const evtSource = new EventSource(
-      "/api/process-mc-region?regionId=" + mcRegion.id
-    );
-    evtSource.addEventListener("message", (event) => {
-      const data = event.data;
-      if (data === "processing") {
-        setState("processing");
-      } else if (data === "processed") {
-        setState("processed");
-        evtSource.close();
-      }
-      console.log("Event received:", data);
+    queueItem(mcRegion.id);
+    const res = await fetch(`/api/process-mc-region?regionId=${mcRegion.id}`, {
+      method: "GET",
     });
-    evtSource.onerror = (err) => {
-      console.error("EventSource failed:", err);
-    };
+
+    if (!res.ok) {
+      console.error("Failed to process region:", mcRegion.id);
+      return;
+    }
   };
 
-  const isUnprocessed = state === "unprocessed";
-  const isProcessing = state === "processing";
-  const isProcessed = state === "processed";
-  const isQueued = state === "queued";
+  const isUnprocessed = status === "unprocessed";
+  const isProcessing = status === "processing";
+  const isProcessed = status === "processed";
+  const isQueued = status === "queued";
+  const isFailed = status === "error";
   return (
     <div
       className={cn(
@@ -51,30 +49,35 @@ const SidebarMcRegion = ({
       <Link
         href={`/detail/${mcRegion.id}`}
         className={cn(
-          buttonVariants({ variant: "ghost" }),
+          buttonVariants({ variant: isActive ? "secondary" : "ghost" }),
           "flex justify-start cursor-pointer flex-1",
-          (isProcessing || isQueued) && "opacity-50"
+          (isProcessing || isQueued) && "opacity-50",
+          "mr-1"
         )}
       >
         <Globe className="text-muted-foreground " />
         {mcRegion.name}
       </Link>
 
-      <Button
-        variant="ghost"
-        className={cn("opacity-0", isProcessing && "opacity-100")}
-        size="icon"
-        disabled={isProcessing || isQueued}
-        onClick={handleProcess}
-        style={isProcessed || isQueued ? { opacity: 1 } : {}}
-      >
-        {isUnprocessed && <Play />}
-        {isQueued && <Minus className="text-muted-foreground" />}
-        {isProcessing && (
-          <Loader2 className="animate-spin text-muted-foreground" />
-        )}
-        {isProcessed && <Check className="text-emerald-600" />}
-      </Button>
+      {!isProcessed && (
+        <Button
+          variant="ghost"
+          className={cn("opacity-0", isProcessing && "opacity-100")}
+          size="icon"
+          disabled={isProcessing || isQueued}
+          onClick={handleProcess}
+          style={isProcessed || isQueued || isFailed ? { opacity: 1 } : {}}
+        >
+          {isUnprocessed && <Play />}
+          {isQueued && <Minus className="text-muted-foreground" />}
+          {isProcessing && (
+            <Loader2 className="animate-spin text-muted-foreground" />
+          )}
+          {isProcessed && <Check className="text-emerald-600" />}
+          {isFailed && <X className="text-red-600" />}
+        </Button>
+      )}
+      {isProcessed && <ConfirmRescanDialog onConfirm={handleProcess} />}
     </div>
   );
 };

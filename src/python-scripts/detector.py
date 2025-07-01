@@ -1,8 +1,9 @@
 from anvil import Region
 import json
-import time
 import sys
+import sqlite3
 from typing import List, Dict, Tuple
+from datetime import datetime, timezone
 
 # Constants
 X_REGION = int(sys.argv[1])
@@ -162,31 +163,66 @@ def process_chunk(chunk_x, chunk_z):
 
 processed = 0
 
-time_before = time.time()
-
 for chunk_x in range(REGION_SIZE):
   for chunk_z in range(REGION_SIZE):
     process_chunk(chunk_x, chunk_z)
 
-time_after = time.time()
+# Insert found entities into the database
+conn = sqlite3.connect("src/prisma/db/database.db")
+db = conn.cursor()
 
-output_data = {
-  "found_chests": found_chests,
-  "found_shulker_boxes": found_shulker_boxes,
-  "found_chests_sphere": found_chests_sphere,
-  "found_shulker_boxes_sphere": found_shulker_boxes_sphere,
-}
+region_name = FILE_NAME.split("/").pop()
+now = datetime.now(timezone.utc).isoformat(" ", "seconds")
+db.execute("SELECT id FROM McRegion WHERE name = ?", (region_name,))
+row = db.fetchone()
+if row:
+    region_id = row[0]
+    # Always update updatedAt for region
+    db.execute(
+        "UPDATE McRegion SET updatedAt = ? WHERE id = ?",
+        (now, region_id)
+    )
+else:
+    # Insert new region if not found, set createdAt and updatedAt
+    db.execute(
+        "INSERT INTO McRegion (name, createdAt, updatedAt) VALUES (?, ?, ?)",
+        (region_name, now, now)
+    )
+    region_id = db.lastrowid
+    conn.commit()
 
-print(json.dumps(output_data, indent=2))
+def upsert_entity(entity_type, coords, region_id, data3d=None):
+    now = datetime.now(timezone.utc).isoformat(" ", "seconds")
+    # Upsert: try update, if not exists then insert
+    db.execute(
+        """
+        SELECT id FROM FoundEntities WHERE type = ? AND data = ? AND regionId = ?
+        """,
+        (entity_type, f"{coords[0]} {coords[1]} {coords[2]}", region_id)
+    )
+    entity_row = db.fetchone()
+    if entity_row:
+        db.execute(
+            """
+            UPDATE FoundEntities SET updatedAt = ?, data3d = ? WHERE id = ?
+            """,
+            (now, json.dumps(data3d) if data3d is not None else None, entity_row[0])
+        )
+    else:
+        db.execute(
+            """
+            INSERT INTO FoundEntities (type, data, regionId, isSaved, data3d, createdAt, updatedAt)
+            VALUES (?, ?, ?, 0, ?, ?, ?)
+            """,
+            (entity_type, f"{coords[0]} {coords[1]} {coords[2]}", region_id, json.dumps(data3d) if data3d is not None else None, now, now)
+        )
 
-# for chest in found_chests:
-#   print(f"Chest found at coordinates {get_world_coordinates(chest[2], chest[3], chest[4], chest[0], chest[1])}")
-# if len(found_chests) == 0:
-#   print("No chests found")
+for idx, coords in enumerate(found_chests):
+    sphere = found_chests_sphere[idx] if idx < len(found_chests_sphere) else None
+    upsert_entity("chest", coords, region_id, sphere)
+for idx, coords in enumerate(found_shulker_boxes):
+    sphere = found_shulker_boxes_sphere[idx] if idx < len(found_shulker_boxes_sphere) else None
+    upsert_entity("shulker_box", coords, region_id, sphere)
 
-# for box in found_shulker_boxes:
-#   print(f"Shulker box found at coordinates {get_world_coordinates(box[2], box[3], box[4], box[0], box[1])}")
-# if len(found_shulker_boxes) == 0:
-#   print("No shulker boxes found")
-
-# print(f"Processing completed in {time_after - time_before:.2f} seconds")
+conn.commit()
+conn.close()

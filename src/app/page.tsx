@@ -1,11 +1,6 @@
-import ContentLayout from "@/components/content-layout";
-import Sidebar from "@/components/sidebar/sidebar";
+// app/[...not-found]/page.tsx
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <div className="flex h-full w-full gap-4">
-      <Sidebar />
-      <ContentLayout>awe</ContentLayout>
-    </div>
-  );
+export default function CatchAllRedirectPage() {
+  redirect("/add-region");
 }

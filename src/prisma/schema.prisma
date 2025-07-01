@@ -18,12 +18,21 @@ model McRegion {
 }
 
 model FoundEntities {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   type      String
   data      String
   data3d    String?
+  regionId  Int?
+  region    McRegion? @relation(fields: [regionId], references: [id])
+  isSaved   Boolean   @default(false)
+}
+
+model ExecutionQueue {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  state     String   @default("queued")
   regionId  Int
-  region    McRegion @relation(fields: [regionId], references: [id])
 }

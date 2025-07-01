@@ -3,16 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "bun db:reset-queue && next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "migrate": "prisma migrate dev --name init --schema src/prisma/schema.prisma",
-    "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts"
+    "migrate-deploy": "prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma generate --schema src/prisma/schema.prisma",
+    "add-existing-mc-regions": "npx tsx src/scripts/add-existing-mc-regions.ts",
+    "db:create": "npx tsx src/scripts/add-database.ts",
+    "setup": "bun i && bun db:create && bun migrate-deploy && bun add-existing-mc-regions && bun db:reset-queue && bun run build && bun start",
+    "update": "git reset --hard && git pull && bun setup",
+    "db:reset-queue": "npx tsx src/scripts/reset-queue.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
     "@prisma/extension-accelerate": "^2.0.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^10.3.0",
@@ -21,13 +27,17 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.523.0",
     "next": "15.3.4",
+    "next-themes": "^0.4.6",
     "prisma": "^6.10.1",
     "radix-ui": "^1.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "three": "^0.177.0",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

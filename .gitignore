@@ -42,4 +42,6 @@ next-env.d.ts
 
 # custom
 src/prisma/db
+src/prisma/database.db
+*.db
 src/mc-regions

@@ -3,9 +3,12 @@ import CopyText from "@/components/copy-text";
 import Entity3DPreview from "@/components/detail/entity-3d-preview";
 import Navigator from "@/components/detail/navigator";
 import Sidebar from "@/components/sidebar/sidebar";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FoundBlockSphere } from "@/lib/executionQueue";
 import { prisma } from "@/lib/prisma";
+import { X } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -47,15 +50,22 @@ const DetailsPage = async ({
   };
 
   return (
-    <div className="flex h-full w-full gap-4">
-      <Sidebar />
+    <div className="flex h-full w-full">
+      <Sidebar activeRegion={entity.regionId} />
       <ContentLayout className="relative">
         <h1 className="text-3xl font-semibold mb-6 flex items-center gap-2 justify-between">
           {entityTypeTranslations[entity.type] || entity.type}{" "}
           <span className="text-lg bg-slate-100 text-slate-400 font-normal px-2 rounded-2xl">
             Id: {entity.id}
           </span>
+          <Link
+            href={`/detail/${entity.regionId}`}
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            <X /> Zurück zur Regionsübersicht
+          </Link>
         </h1>
+
         <Card>
           <CardContent className="w-full flex flex-col gap-4 md:flex-row">
             <CopyText
@@ -78,6 +88,9 @@ const DetailsPage = async ({
         <Navigator
           prevId={allEntities[prevIndex].id}
           nextId={allEntities[nextIndex].id}
+          currentId={entity.id}
+          defaultSaved={entity.isSaved}
+          regionId={entity.regionId}
         />
       </ContentLayout>
     </div>

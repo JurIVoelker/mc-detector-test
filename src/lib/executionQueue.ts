@@ -4,79 +4,69 @@ import { prisma } from "./prisma";
 type Vec3 = [number, number, number];
 export type FoundBlockSphere = { local: Vec3; world: Vec3; item_id: number };
 
-export const queuedMcRegions: {
-  id: number;
-  state: "queued" | "processing" | "processed";
-}[] = [];
+export async function addToExecutionQueue(id: number) {
+  await prisma.mcRegion.update({
+    where: { id },
+    data: { status: "queued" },
+  });
+  processQueue();
+}
 
-let processing = false;
-
-export function addToExecutionQueue(id: number) {
-  queuedMcRegions.push({
-    id,
-    state: "queued",
+export async function addAllToExecutionQueue() {
+  await prisma.mcRegion.updateMany({
+    where: { status: { in: ["error", "unprocessed"] } },
+    data: { status: "queued" },
   });
   processQueue();
 }
 
 async function processQueue() {
-  if (processing || queuedMcRegions.length === 0) {
+  const processingRegions = await prisma.mcRegion.findMany({
+    where: {
+      status: "processing",
+    },
+  });
+
+  if (processingRegions.length > 0) {
+    console.log(
+      "Processing is already in progress, skipping new queue processing."
+    );
     return;
   }
 
-  processing = true;
-  while (queuedMcRegions.some((item) => item.state === "queued")) {
-    const nextItem = queuedMcRegions.find((item) => item.state === "queued");
+  let queuedRegions = await prisma.mcRegion.findMany({
+    where: {
+      status: "queued",
+    },
+  });
+
+  if (queuedRegions.length === 0) {
+    return;
+  }
+
+  while (queuedRegions.some((item) => item.status === "queued")) {
+    const nextItem = queuedRegions.find((item) => item.status === "queued");
     if (nextItem) {
       try {
-        nextItem.state = "processing";
         await prisma.mcRegion.update({
           where: { id: nextItem.id },
           data: { status: "processing" },
         });
 
-        const data = (await executeScript(nextItem.id)) as {
-          found_chests: number[][];
-          found_shulker_boxes: number[][];
-          found_chests_sphere: FoundBlockSphere[];
-          found_shulker_boxes_sphere: FoundBlockSphere[];
-        };
-
-        const foundChests = data.found_chests.map(
-          (chest) => `${chest[0]} ${chest[1]} ${chest[2]}`
+        console.log(`Processing region with ID ${nextItem.id}`);
+        const timeBefore = Date.now();
+        await executeScript(nextItem.id);
+        const timeAfter = Date.now();
+        console.log(
+          `Processing region with ID ${nextItem.id} took ${
+            (timeAfter - timeBefore) / 1000
+          } seconds`
         );
-        const foundShulkerBoxes = data.found_shulker_boxes.map(
-          (box) => `${box[0]} ${box[1]} ${box[2]}`
-        );
-
-        await prisma.foundEntities.deleteMany({
-          where: { regionId: nextItem.id },
-        });
-
-        await prisma.foundEntities.createMany({
-          data: foundChests.map((chest, index) => ({
-            regionId: nextItem.id,
-            data3d: JSON.stringify(data.found_chests_sphere[index]),
-            type: "chest",
-            data: chest,
-          })),
-        });
-
-        await prisma.foundEntities.createMany({
-          data: foundShulkerBoxes.map((box, index) => ({
-            regionId: nextItem.id,
-            type: "shulker_box",
-            data3d: JSON.stringify(data.found_shulker_boxes_sphere[index]),
-            data: box,
-          })),
-        });
 
         await prisma.mcRegion.update({
           where: { id: nextItem.id },
           data: { status: "processed" },
         });
-
-        nextItem.state = "processed";
       } catch (error) {
         console.error(`Error processing region with ID ${nextItem.id}:`, error);
 
@@ -85,13 +75,14 @@ async function processQueue() {
           where: { id: nextItem.id },
           data: { status: "error" },
         });
-
-        // Mark the item as errored in the queue
-        nextItem.state = "processed";
       }
     }
+    queuedRegions = await prisma.mcRegion.findMany({
+      where: {
+        status: "queued",
+      },
+    });
   }
-  processing = false;
 }
 
 const executeScript = async (id: number) => {
@@ -116,8 +107,7 @@ const executeScript = async (id: number) => {
         return;
       }
       try {
-        const parsedOutput = JSON.parse(stdout);
-        resolve(parsedOutput);
+        resolve(stdout);
       } catch (parseError) {
         console.error(`Error parsing script output: ${parseError}`);
         console.error(`Raw output: ${stdout}`);
